@@ -53,7 +53,11 @@ export default {
                 index: "/realtimeData",
                 title: "实时数据",
             },
-            
+            {
+                icon: "el-icon-lx-sort",
+                index: "/monitor",
+                title: "实时监控",
+            },
             
            
         ];

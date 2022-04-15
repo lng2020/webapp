@@ -46,12 +46,12 @@ const routes = [
                 },
                 component: () => import (/* webpackChunkName: "403" */ '../views/403.vue')
             }, {
-                path: '/user',
-                name: 'user',
+                path: '/monitor',
+                name: 'monitor',
                 meta: {
-                    title: '个人中心'
+                    title: '实时监控'
                 },
-                component: () => import (/* webpackChunkName: "user" */ '../views/User.vue')
+                component: () => import (/* webpackChunkName: "user" */ '../views/Monitor.vue')
             }, 
         ]
     }, {
