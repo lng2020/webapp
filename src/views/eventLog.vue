@@ -76,7 +76,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import { fetchData } from "../api/index";
 
 export default {
-    name: "basetable",
+    name: "eventLog",
     setup() {
         const query = reactive({
             id: "",
@@ -136,7 +136,6 @@ export default {
             handleSearch,
             handlePageChange,
             handleDelete,
-            
         };
     },
 };

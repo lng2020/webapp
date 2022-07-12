@@ -1,10 +1,5 @@
 <template>
     <div class="header">
-        <!-- 折叠按钮 -->
-        <div class="collapse-btn" @click="collapseChage">
-            <i v-if="!collapse" class="el-icon-s-fold"></i>
-            <i v-else class="el-icon-s-unfold"></i>
-        </div>
         <div class="logo">后台管理系统</div>
         <div class="header-right">
             <div class="header-user-con">
@@ -42,26 +37,11 @@
     </div>
 </template>
 <script>
-import { computed, onMounted } from "vue";
-import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 export default {
     setup() {
         const username = localStorage.getItem("ms_username");
         const message = 2;
-
-        const store = useStore();
-        const collapse = computed(() => store.state.collapse);
-        // 侧边栏折叠
-        const collapseChage = () => {
-            store.commit("handleCollapse", !collapse.value);
-        };
-
-        onMounted(() => {
-            if (document.body.clientWidth < 1500) {
-                collapseChage();
-            }
-        });
 
         // 用户名下拉菜单选择事件
         const router = useRouter();
@@ -77,8 +57,6 @@ export default {
         return {
             username,
             message,
-            collapse,
-            collapseChage,
             handleCommand,
         };
     },

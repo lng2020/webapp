@@ -16,7 +16,7 @@ const routes = [
                 meta: {
                     title: '系统首页'
                 },
-                component: () => import ( /* webpackChunkName: "dashboard" */ "../views/Dashboard.vue")
+                component: () => import ( /* webpackChunkName: "dashboard" */ "../views/dashboard.vue")
             }, {
                 path: "/eventLog",
                 name: "eventLog",
@@ -51,7 +51,14 @@ const routes = [
                 meta: {
                     title: '实时监控'
                 },
-                component: () => import (/* webpackChunkName: "user" */ '../views/Monitor.vue')
+                component: () => import (/* webpackChunkName: "user" */ '../views/monitor.vue')
+            }, {
+                path: '/device',
+                name: 'device',
+                meta: {
+                    title: '站点结构'
+                },
+                component: () => import (/* webpackChunkName: "user" */ '../views/device.vue')
             }, 
         ]
     }, {

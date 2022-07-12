@@ -3,9 +3,30 @@
         <el-row :gutter="20">
             <el-col :span="6">
                 <el-card shadow="hover" class="mgb20" style="height:524px;">
-                   
-            
-                   
+                    <el-button text @click="chagetrue">新增modbus_tcp连接</el-button>
+
+                    <el-dialog v-model="dialogFormVisible" title="Shipping address">
+                        <el-form :model="form">
+                        <el-form-item label="地址" :label-width="formLabelWidth">
+                            <el-input v-model="form.address" autocomplete="off" />
+                        </el-form-item>
+                        <el-form-item label="端口" :label-width="formLabelWidth">
+                            <el-input v-model="form.port" autocomplete="off" />
+                        </el-form-item>
+                        </el-form>
+                        <template #footer>
+                        <span class="dialog-footer">
+                            <el-button @click="chagefalse">取消</el-button>
+                            <el-button type="primary" @click="sendform"
+                            >确认添加</el-button
+                            >
+                        </span>
+                        </template>
+                    </el-dialog>
+                    <br><br>
+                    <el-button id="start61850">start61850</el-button>
+                    <br><br>
+                    <el-button id="end61850">end61850</el-button>
                 </el-card>
             </el-col>
             <el-col :span="18">
@@ -201,8 +222,20 @@
 <script>
 import Schart from "vue-schart";
 import { reactive } from "vue";
+
+
 export default {
     name: "dashboard",
+    data(){
+        return{
+            dialogFormVisible:false,
+            formLabelWidth:'140px',
+            form:{
+                address:"127.0.0.1",
+                port:"502"
+            }
+        }
+    },
     components: { Schart },
     setup() {
         const name = localStorage.getItem("ms_username");
@@ -317,6 +350,69 @@ export default {
             role,
         };
     },
+    created(){
+        var address = 'ws://localhost:10077';
+        var socket=new WebSocket(address);
+        console.log('client connecting to ' + address );
+
+        socket.onopen=function(event) {
+            console.log("info: ws connected");
+                //主动调用
+            console.log("config start61850 ...");
+            document.getElementById("start61850").onclick = function() {
+                socket.send('start61850');
+                console.log("start server ...");
+            };
+
+            console.log("config end61850 ...");
+            document.getElementById("end61850").onclick = function() {
+                socket.send('end61850');
+                console.log("end server ...");
+            };
+        };
+
+        socket.onerror=function(error) {
+            console.log('Connection error: ' + error.message);
+            //process.exit(1);
+        };
+
+        socket.onclose=function() {
+            console.log('Connection closed.');
+            //process.exit(1);
+        };
+    },
+    methods:{
+        open:function(){
+        },
+        chagetrue:function(){
+            this.dialogFormVisible=true;
+        },
+        chagefalse:function(){
+            this.dialogFormVisible=false;
+        },
+        sendform:function(){
+            this.dialogFormVisible=false;
+            var address = 'ws://localhost:10077';
+            var socket=new WebSocket(address);
+            socket.onopen=function(event) {
+                //socket.send('modbus_tcp,'+this.form.address+','+this.form.port);
+                socket.send('hello');
+            };
+            socket.onmessage = function(msg) {
+                console.log("Received Message: " + msg);
+            };
+            
+            socket.onerror=function(error) {
+                console.log('Connection error: ' + error.message);
+                //process.exit(1);
+            };
+
+            socket.onclose=function() {
+                console.log('Connection closed.');
+                //process.exit(1);
+            };
+        }
+    }
 };
 </script>
 
