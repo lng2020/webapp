@@ -28,6 +28,7 @@
           <el-button
             size="mini"
             type="danger"
+            v-if="scope.row.ID > 100"
             @click="handleDelete(scope.$index, scope.row)"
             >删除</el-button
           >
@@ -46,8 +47,7 @@
               <el-form-item label="设备类型" :label-width="formLabelWidth">
                 <el-select v-model="form.type" placeholder="选择设备类型">
                   <el-option label="开关" value="开关" />
-                  <el-option label="温度传感器" value="温度传感器" />
-                  <el-option label="湿度传感器" value="温度传感器" />
+                  <el-option label="温湿度传感器" value="温度传感器" />
                   <el-option label="气体传感器" value="气体传感器" />
                   <el-option label="水位监测" value="水位监测" />
                 </el-select>
@@ -69,9 +69,7 @@
             <template #footer>
               <span class="dialog-footer">
                 <el-button @click="dialogVisible = false">取消</el-button>
-                <el-button type="primary" @click="confirm"
-                  >确定</el-button
-                >
+                <el-button type="primary" @click="confirm">确定</el-button>
               </span>
             </template>
           </el-dialog>
@@ -82,6 +80,7 @@
 </template>
 <script>
 import { ref, reactive, onMounted, onUnmounted } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 export default {
   name: "device",
@@ -99,7 +98,19 @@ export default {
 
     var dialogVisible = ref(false);
     var data = reactive({ Array: [] }); //设备树
-    var form = reactive({ name: "", type: "开关", address: "", minn: 0, maxx: 0 }); //修改或添加的表单
+    var form = reactive({
+      name: "",
+      type: "开关",
+      address: "",
+      minn: 0,
+      maxx: 0,
+      Date: "yy-MM-dd hh:mm:ss",
+      funcNo: 0,
+      port: 0,
+      size: 0,
+      slaveID: 0,
+      startAddress: 0,
+    }); //修改或添加的表单
     //console.log("client connecting to " + address);
     const getData = () => {
       const address = "ws://localhost:10077";
@@ -111,7 +122,7 @@ export default {
             func: 5,
           })
         );
-        console.log("info: ws connected");
+        //console.log("info: ws connected");
       };
       socket.onerror = function (error) {
         console.log("Connection error: " + error.message);
@@ -142,15 +153,15 @@ export default {
         socket.send(
           JSON.stringify({
             func: 4,
-            data: form,
+            data: data.Array,
           })
         );
-        console.log(
-          JSON.stringify({
-            func: 4,
-            data: form,
-          })
-        );
+        // console.log(
+        //   JSON.stringify({
+        //     func: 4,
+        //     data: form,
+        //   })
+        // );
       };
       socket.onerror = function (error) {
         console.log("Connection error: " + error.message);
@@ -160,7 +171,9 @@ export default {
         console.log("Connection closed.");
         // process.exit(1);
       };
-      socket.onmessage = function (msg) {};
+      socket.onmessage = function (msg) {
+        console.log(msg);
+      };
     };
 
     const handleAdd = (index, obj) => {
@@ -169,14 +182,38 @@ export default {
       console.log(obj);
       console.log(index);
       form["ID"] = obj.ID * 100 + obj.children.length + 1;
+      form["value"] = null;
     };
     // data.Array[index].children
 
     const handleEdit = (index, obj) => {};
-    const handleDelete = (index, obj) => {};
+    const handleDelete = (index, obj) => {
+      console.log(index);
+      //console.log(obj);
+
+      ElMessageBox.confirm("确定要删除吗？", "提示", {
+        type: "warning",
+      })
+        .then(() => {
+          data.Array[parseInt(obj["ID"] / 100) - 1].children.splice(index, 1);
+          console.log(data.Array);
+          console.log(obj);
+          
+          ElMessage.success("删除成功");
+
+          sendForm();
+        })
+        .catch(() => {
+          console.log('删除失败');
+          
+        });
+    };
 
     const confirm = () => {
+      dialogVisible.value = false;
       console.log("添加节点");
+      data.Array[parseInt(form["ID"] / 100) - 1].children.push(form);
+      console.log(data.Array);
       sendForm();
     };
 

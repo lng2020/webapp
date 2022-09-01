@@ -207,7 +207,7 @@ export default {
             func: 5,
           })
         );
-        console.log("info: ws connected");
+        //console.log("info: ws connected");
       };
       socket.onerror = function (error) {
         console.log("Connection error: " + error.message);

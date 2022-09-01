@@ -131,7 +131,7 @@ export default {
             type: query.type,
           })
         );
-        console.log("info: ws connected");
+        //console.log("info: ws connected");
       };
       socket.onerror = function (error) {
         console.log("Connection error: " + error.message);
@@ -146,17 +146,40 @@ export default {
         //console.log(msg);
         //data.arr=[];
         //console.log(msg.data);
-        let newData = JSON.parse(msg.data)
+        let newData = JSON.parse(msg.data);
         if (
           data.arr.some((item) => {
             if (item.id == newData.id) {
               return true;
             }
-          })==false
+          }) == false
         ) {
           data.arr.push(newData);
         }
       };
+    };
+
+    const sendDelete = (ID) => {
+      const address = "ws://localhost:10077";
+      const socket = new WebSocket(address);
+      socket.onopen = function (event) {
+        socket.send(
+          JSON.stringify({
+            func: 6,
+            data: ID
+          })
+        );
+        //console.log("info: ws connected");
+      };
+      socket.onerror = function (error) {
+        console.log("Connection error: " + error.message);
+        // process.exit(1);
+      };
+      socket.onclose = function () {
+        console.log("Connection closed.");
+        // process.exit(1);
+      };
+      socket.onmessage = function (msg) {};
     };
 
     const fetchData = () => {
@@ -183,7 +206,8 @@ export default {
       })
         .then(() => {
           ElMessage.success("删除成功");
-          tableData.value.splice(index, 1);
+          data.arr.splice(index, 1);
+          sendDelete(index+1);
         })
         .catch(() => {});
     };
